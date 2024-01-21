@@ -101,6 +101,14 @@ export default function Home() {
           <Table
             columns={columns}
             data={data}
+            summary={{
+              firstName: data.length,
+              lastName: data.length,
+              age: data.length,
+              visits: data.length,
+              status: data.length,
+              progress: data.length,
+            }}
             height={bounds.height}
             variant="borderless"
           />

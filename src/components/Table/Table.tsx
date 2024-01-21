@@ -22,6 +22,7 @@ import {
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { TableHeader } from './TableHeader'
+import { TableSummary } from './TableSummary'
 import { useVirtualizedRows } from './useVritualizedRows'
 
 declare module '@tanstack/react-table' {
@@ -38,6 +39,7 @@ export function Table<Data extends object>({
   columns,
   data,
   height,
+  summary,
   isVirtualized = false,
   variant = 'default',
   checkSelected,
@@ -49,6 +51,7 @@ export function Table<Data extends object>({
   columns: ColumnDef<Data, any>[]
   data: Data[]
   height?: number
+  summary?: Partial<Record<keyof Data, string | number | null>>
   isVirtualized?: boolean
   variant?: 'default' | 'borderless'
   checkSelected?: (row: Row<Data>) => boolean
@@ -114,6 +117,21 @@ export function Table<Data extends object>({
                     width={header.column.columnDef.meta?.width}
                     minWidth={header.column.columnDef.meta?.minWidth}
                   />
+                ))}
+              </tr>
+            ))}
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id} className="bg-gray-600">
+                {headerGroup.headers.map((header, index) => (
+                  <TableSummary
+                    key={`summary-${header.id}`}
+                    header={header}
+                    index={index}
+                    groupLength={headerGroup.headers.length}
+                    isBorderless={isBorderless}
+                  >
+                    {get(summary, header.column.id)}
+                  </TableSummary>
                 ))}
               </tr>
             ))}
