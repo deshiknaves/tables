@@ -25,8 +25,7 @@ const columns = [
     header: () => <span>First Name</span>,
     footer: (info) => info.column.id,
   }),
-  columnHelper.accessor((row) => row.lastName, {
-    id: 'lastName',
+  columnHelper.accessor('lastName', {
     cell: (info) => <i>{info.getValue()}</i>,
     header: () => <span>Last Name</span>,
     footer: (info) => info.column.id,
@@ -85,9 +84,7 @@ export default function Home() {
     }
 
     async function getData() {
-      console.log('getting data')
       const data = await dataWorkerRef.current({})
-      console.log(data)
 
       setData(data.data)
       workingRef.current = false
@@ -96,8 +93,6 @@ export default function Home() {
     setTimeout(getData, 500)
     workingRef.current = true
   }, [])
-
-  console.log(bounds)
 
   return (
     <Layout>

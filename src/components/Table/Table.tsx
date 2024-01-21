@@ -2,6 +2,7 @@
 
 import {
   ColumnDef,
+  ColumnOrderState,
   Row,
   RowData,
   flexRender,
@@ -9,7 +10,15 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import clsx from 'clsx'
-import { MouseEvent, ReactNode, UIEvent, useEffect, useRef } from 'react'
+import get from 'lodash/get'
+import {
+  MouseEvent,
+  ReactNode,
+  UIEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { TableHeader } from './TableHeader'
@@ -49,13 +58,17 @@ export function Table<Data extends object>({
 }) {
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const isBorderless = variant === 'borderless'
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
+    columns.map((column) => (column.id || get(column, 'accessorKey')) as string)
+  )
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onColumnOrderChange: setColumnOrder,
     state: {
-      columnOrder: ['symbol', 'name', 'price', 'index'],
+      columnOrder,
       columnSizing: {
         firstName: 150,
       },
@@ -87,7 +100,7 @@ export function Table<Data extends object>({
         onScroll={onScroll}
       >
         <table className="min-w-full relative table-fixed text-secondary-text border-collapse">
-          <thead className="sticky top-0 bg-black border-b border-gray-800">
+          <thead className="sticky top-0 border-b border-gray-800 bg-gray-800">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
@@ -95,6 +108,7 @@ export function Table<Data extends object>({
                     key={header.id}
                     header={header}
                     index={index}
+                    table={table}
                     groupLength={headerGroup.headers.length}
                     isBorderless={isBorderless}
                     width={header.column.columnDef.meta?.width}
