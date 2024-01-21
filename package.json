@@ -20,7 +20,8 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
-    "react-use-measure": "^2.1.1"
+    "react-use-measure": "^2.1.1",
+    "ts-pattern": "^5.0.6"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",

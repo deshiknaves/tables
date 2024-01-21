@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-table'
 import { clsx } from 'clsx'
 import { useDrag, useDrop } from 'react-dnd'
+import { match } from 'ts-pattern'
 
 const reorderColumn = (
   draggedColumnId: string,
@@ -71,12 +72,14 @@ export function TableHeader<Data extends object>({
       ref={dropRef}
       key={header.id}
       colSpan={header.colSpan}
-      className={clsx('border border-gray-800 text-sm border-collapse', {
+      className={clsx('border relative border-black bg-gray-800 text-sm z-10', {
         'border-l-0': index === 0 && isBorderless,
         'border-r-0': index === groupLength - 1 && isBorderless,
         'border-t-0': isBorderless,
+        'border-b-0': isBorderless,
         'text-center': header.colSpan > 1,
         'text-start': header.colSpan === 1,
+        'sticky left-0 z-20': column.getIsPinned(),
       })}
       style={{
         width: header.getSize(),
@@ -86,17 +89,16 @@ export function TableHeader<Data extends object>({
     >
       <div
         className={clsx(
-          { 'bg-gray-900': isOver },
-          "flex justify-between bg-gray-800 px-2 py-1 relative after:content-[''] after:h-full after:-right-1 after:bg-black after:absolute after:top-0 after:w-[2px]"
+          {
+            'bg-gray-900': isOver,
+          },
+          'flex h-full bg-gray-800 px-2 py-1'
         )}
         ref={previewRef}
       >
-        {header.isPlaceholder
-          ? null
-          : flexRender(header.column.columnDef.header, header.getContext())}
         <button
           className={clsx(
-            'w-[24px] h-[24px] flex justify-center align-middle',
+            'w-[16px] h-[24px] flex justify-center align-middle mr-2',
             {
               'cursor-grab': !isDragging,
               'cursor-grabbing': isDragging,
@@ -104,7 +106,22 @@ export function TableHeader<Data extends object>({
           )}
           ref={dragRef}
         >
-          🟰
+          =
+        </button>
+        {header.isPlaceholder
+          ? null
+          : flexRender(header.column.columnDef.header, header.getContext())}
+        <button
+          type="button"
+          className="ml-auto"
+          onClick={header.column.getToggleSortingHandler()}
+        >
+          {match(header.column.getIsSorted())
+            .with('asc', () => '🔼')
+            .with('desc', () => '🔽')
+            .otherwise(() => (
+              <>‒</>
+            ))}
         </button>
         <div
           onDoubleClick={() => header.column.resetSize()}

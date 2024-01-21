@@ -101,6 +101,7 @@ export default function Home() {
           <Table
             columns={columns}
             data={data}
+            isVirtualized
             summary={{
               firstName: data.length,
               lastName: data.length,

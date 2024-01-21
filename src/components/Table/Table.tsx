@@ -5,8 +5,10 @@ import {
   ColumnOrderState,
   Row,
   RowData,
+  SortingState,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
 import clsx from 'clsx'
@@ -65,16 +67,27 @@ export function Table<Data extends object>({
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
     columns.map((column) => (column.id || get(column, 'accessorKey')) as string)
   )
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     onColumnOrderChange: setColumnOrder,
     columnResizeDirection: 'ltr',
     columnResizeMode: 'onChange',
+    enableColumnPinning: true,
+    keepPinnedRows: true,
+    enableSorting: true,
+    onSortingChange: setSorting,
     state: {
+      sorting,
       columnOrder,
+      columnPinning: {
+        left: ['firstName'],
+        right: [],
+      },
     },
   })
 
@@ -103,12 +116,12 @@ export function Table<Data extends object>({
         onScroll={onScroll}
       >
         <table
-          className="min-w-full relative table-auto text-secondary-text border-collapse"
+          className="min-w-full relative table-auto text-secondary-text border-separate border-spacing-0"
           style={{
             width: table.getTotalSize(),
           }}
         >
-          <thead className="sticky top-0 border-b border-gray-800 bg-gray-800">
+          <thead className="sticky top-0 border-b border-gray-800 bg-gray-800 z-20">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
@@ -175,7 +188,7 @@ export function Table<Data extends object>({
                         <td
                           key={cell.id}
                           className={clsx(
-                            'border border-gray-800 text-sm h-full',
+                            'border border-gray-800 text-sm h-full bg-black',
                             {
                               'border-l-0': index === 0 && isBorderless,
                               'border-r-0':
@@ -183,6 +196,7 @@ export function Table<Data extends object>({
                               'p-2': !Boolean(
                                 cell.column.columnDef.meta?.flush
                               ),
+                              'sticky left-0 z-10': cell.column.getIsPinned(),
                             },
                             cell.column.columnDef.meta?.className
                           )}
