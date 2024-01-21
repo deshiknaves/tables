@@ -83,14 +83,25 @@ export function TableHeader<Data extends object>({
       <div
         className={clsx(
           { 'bg-gray-900': isOver },
-          "flex justify-between bg-gray-800 p-2 relative after:content-[''] after:h-full after:-right-1 after:bg-black after:absolute after:top-0 after:w-[2px]"
+          "flex justify-between bg-gray-800 px-2 py-1 relative after:content-[''] after:h-full after:-right-1 after:bg-black after:absolute after:top-0 after:w-[2px]"
         )}
         ref={previewRef}
       >
         {header.isPlaceholder
           ? null
           : flexRender(header.column.columnDef.header, header.getContext())}
-        <button ref={dragRef}>🟰</button>
+        <button
+          className={clsx(
+            'w-[24px] h-[24px] flex justify-center align-middle',
+            {
+              'cursor-grab': !isDragging,
+              'cursor-grabbing': isDragging,
+            }
+          )}
+          ref={dragRef}
+        >
+          🟰
+        </button>
       </div>
     </th>
   )
