@@ -7,8 +7,12 @@ export function Layout({ children }: { children: ReactNode }) {
         Header
       </header>
       <div className="flex grow overflow-hidden">
-        <menu className="w-[300px] border-r border-indigo-500">Menu</menu>
-        <main className="w-full h-full p-3">{children}</main>
+        <menu className="w-[300px] shrink-0 border-r border-indigo-500">
+          Menu
+        </menu>
+        <main className="w-full h-full p-3 grow-0 overflow-hidden">
+          {children}
+        </main>
       </div>
     </div>
   )

@@ -75,9 +75,6 @@ export function Table<Data extends object>({
     columnResizeMode: 'onChange',
     state: {
       columnOrder,
-      // columnSizing: {
-      //   firstName: 150,
-      // },
     },
   })
 
@@ -105,7 +102,12 @@ export function Table<Data extends object>({
         )}
         onScroll={onScroll}
       >
-        <table className="min-w-full relative table-fixed text-secondary-text border-collapse">
+        <table
+          className="min-w-full relative table-auto text-secondary-text border-collapse"
+          style={{
+            width: table.getTotalSize(),
+          }}
+        >
           <thead className="sticky top-0 border-b border-gray-800 bg-gray-800">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
