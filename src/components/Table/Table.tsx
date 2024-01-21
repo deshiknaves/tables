@@ -19,6 +19,8 @@ declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     className?: string
     flush?: boolean
+    width?: number
+    minWidth?: number
   }
 }
 
@@ -54,6 +56,9 @@ export function Table<Data extends object>({
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnOrder: ['symbol', 'name', 'price', 'index'],
+      columnSizing: {
+        firstName: 150,
+      },
     },
   })
 
@@ -92,6 +97,8 @@ export function Table<Data extends object>({
                     index={index}
                     groupLength={headerGroup.headers.length}
                     isBorderless={isBorderless}
+                    width={header.column.columnDef.meta?.width}
+                    minWidth={header.column.columnDef.meta?.minWidth}
                   />
                 ))}
               </tr>

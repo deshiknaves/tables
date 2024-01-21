@@ -6,11 +6,15 @@ export function TableHeader<Data extends object>({
   index,
   isBorderless,
   groupLength = 1,
+  width,
+  minWidth,
 }: {
   header: Header<Data, unknown>
   index: number
   isBorderless?: boolean
   groupLength?: number
+  width?: number
+  minWidth?: number
 }) {
   return (
     <th
@@ -23,6 +27,7 @@ export function TableHeader<Data extends object>({
         'text-center': header.colSpan > 1,
         'text-start': header.colSpan === 1,
       })}
+      style={{ width, minWidth }}
     >
       {header.isPlaceholder
         ? null

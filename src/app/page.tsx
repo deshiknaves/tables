@@ -101,9 +101,14 @@ export default function Home() {
 
   return (
     <Layout>
-      <FullContainer>
+      <FullContainer className="border border-gray-800 rounded-md overflow-hidden">
         {(bounds) => (
-          <Table columns={columns} data={data} height={bounds.height} />
+          <Table
+            columns={columns}
+            data={data}
+            height={bounds.height}
+            variant="borderless"
+          />
         )}
       </FullContainer>
     </Layout>
