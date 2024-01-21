@@ -78,7 +78,11 @@ export function TableHeader<Data extends object>({
         'text-center': header.colSpan > 1,
         'text-start': header.colSpan === 1,
       })}
-      style={{ width, minWidth, opacity: isDragging ? 0.5 : 1 }}
+      style={{
+        width: header.getSize(),
+        minWidth,
+        opacity: isDragging ? 0.5 : 1,
+      }}
     >
       <div
         className={clsx(
@@ -102,6 +106,15 @@ export function TableHeader<Data extends object>({
         >
           🟰
         </button>
+        <div
+          onDoubleClick={() => header.column.resetSize()}
+          onMouseDown={header.getResizeHandler()}
+          onTouchStart={header.getResizeHandler()}
+          className={clsx(
+            'h-[calc(100%+2px)] w-[4px] bg-indigo-500 absolute -right-1 -top-[1px] z-10 opacity-0 hover:opacity-100 transition-opacity duration-200 cursor-col-resize',
+            { 'opacity-100': header.column.getIsResizing() }
+          )}
+        />
       </div>
     </th>
   )

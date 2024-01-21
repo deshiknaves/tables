@@ -21,6 +21,7 @@ import {
 } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import './Table.css'
 import { TableHeader } from './TableHeader'
 import { TableSummary } from './TableSummary'
 import { useVirtualizedRows } from './useVritualizedRows'
@@ -70,11 +71,13 @@ export function Table<Data extends object>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnOrderChange: setColumnOrder,
+    columnResizeDirection: 'ltr',
+    columnResizeMode: 'onChange',
     state: {
       columnOrder,
-      columnSizing: {
-        firstName: 150,
-      },
+      // columnSizing: {
+      //   firstName: 150,
+      // },
     },
   })
 
@@ -120,21 +123,22 @@ export function Table<Data extends object>({
                 ))}
               </tr>
             ))}
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="bg-gray-600">
-                {headerGroup.headers.map((header, index) => (
-                  <TableSummary
-                    key={`summary-${header.id}`}
-                    header={header}
-                    index={index}
-                    groupLength={headerGroup.headers.length}
-                    isBorderless={isBorderless}
-                  >
-                    {get(summary, header.column.id)}
-                  </TableSummary>
-                ))}
-              </tr>
-            ))}
+            {summary &&
+              table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="bg-gray-600">
+                  {headerGroup.headers.map((header, index) => (
+                    <TableSummary
+                      key={`summary-${header.id}`}
+                      header={header}
+                      index={index}
+                      groupLength={headerGroup.headers.length}
+                      isBorderless={isBorderless}
+                    >
+                      {get(summary, header.column.id)}
+                    </TableSummary>
+                  ))}
+                </tr>
+              ))}
           </thead>
           <tbody>
             {paddingTop > 0 && (
