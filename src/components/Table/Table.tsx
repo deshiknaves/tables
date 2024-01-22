@@ -103,6 +103,9 @@ export function Table<Data extends object>({
 
   const { rows } = table.getRowModel()
 
+  const headerGroups = table.getHeaderGroups()
+  const summaryGroupIndex = headerGroups.length - 1
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div
@@ -122,7 +125,7 @@ export function Table<Data extends object>({
           }}
         >
           <thead className="sticky top-0 border-b border-gray-800 bg-gray-800 z-20">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {headerGroups.map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
                   <TableHeader
@@ -139,21 +142,23 @@ export function Table<Data extends object>({
               </tr>
             ))}
             {summary &&
-              table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="bg-gray-600">
-                  {headerGroup.headers.map((header, index) => (
-                    <TableSummary
-                      key={`summary-${header.id}`}
-                      header={header}
-                      index={index}
-                      groupLength={headerGroup.headers.length}
-                      isBorderless={isBorderless}
-                    >
-                      {get(summary, header.column.id)}
-                    </TableSummary>
-                  ))}
-                </tr>
-              ))}
+              table.getHeaderGroups().map((headerGroup, index) =>
+                index === summaryGroupIndex ? (
+                  <tr key={headerGroup.id} className="bg-gray-600">
+                    {headerGroup.headers.map((header, index) => (
+                      <TableSummary
+                        key={`summary-${header.id}`}
+                        header={header}
+                        index={index}
+                        groupLength={headerGroup.headers.length}
+                        isBorderless={isBorderless}
+                      >
+                        {get(summary, header.column.id)}
+                      </TableSummary>
+                    ))}
+                  </tr>
+                ) : null
+              )}
           </thead>
           <tbody>
             {paddingTop > 0 && (
