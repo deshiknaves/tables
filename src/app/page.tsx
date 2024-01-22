@@ -3,12 +3,15 @@
 import { FullContainer } from '@/components/FullContainer'
 import { Layout } from '@/components/Layout'
 import { Table } from '@/components/Table/Table'
+import { faker } from '@faker-js/faker'
 import { useWorker } from '@koale/useworker'
 import { createColumnHelper } from '@tanstack/react-table'
-import { useEffect, useRef, useState } from 'react'
+import sample from 'lodash/sample'
+import { useRef } from 'react'
 import useMeasure from 'react-use-measure'
 
 type Person = {
+  id: number
   firstName: string
   lastName: string
   age: number
@@ -55,9 +58,22 @@ const columns = [
   }),
 ]
 
+const data: Person[] = []
+for (let i = 0; i < 1000; i++) {
+  data.push({
+    id: i,
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    age: faker.number.int({ min: 18, max: 100 }),
+    visits: faker.number.int({ min: 0, max: 1000 }),
+    status: sample(['relationship', 'complicated', 'single']),
+    progress: faker.number.int({ min: 0, max: 100 }),
+  })
+}
+
 export default function Home() {
   const workingRef = useRef(false)
-  const [data, setData] = useState<Person[]>([])
+  // const [data, setData] = useState<Person[]>([])
   const [ref, bounds] = useMeasure()
   const [dataWorker] = useWorker((value) => {
     return new Promise<{ data: Person[] }>((resolve) => {
@@ -84,21 +100,21 @@ export default function Home() {
   const dataWorkerRef = useRef(dataWorker)
   dataWorkerRef.current = dataWorker
 
-  useEffect(() => {
-    if (workingRef.current) {
-      return
-    }
+  // useEffect(() => {
+  //   if (workingRef.current) {
+  //     return
+  //   }
 
-    async function getData() {
-      const data = await dataWorkerRef.current({})
+  //   async function getData() {
+  //     const data = await dataWorkerRef.current({})
 
-      setData(data.data)
-      workingRef.current = false
-    }
+  //     setData(data.data)
+  //     workingRef.current = false
+  //   }
 
-    setTimeout(getData, 500)
-    workingRef.current = true
-  }, [])
+  //   setTimeout(getData, 500)
+  //   workingRef.current = true
+  // }, [])
 
   return (
     <Layout>

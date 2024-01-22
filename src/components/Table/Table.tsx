@@ -3,11 +3,15 @@
 import {
   ColumnDef,
   ColumnOrderState,
+  GroupingState,
   Row,
   RowData,
   SortingState,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
+  getFilteredRowModel,
+  getGroupedRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
@@ -25,6 +29,7 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import './Table.css'
 import { TableHeader } from './TableHeader'
+import { TableRowGroups } from './TableRowGroups'
 import { TableSummary } from './TableSummary'
 import { useVirtualizedRows } from './useVritualizedRows'
 
@@ -68,13 +73,19 @@ export function Table<Data extends object>({
     columns.map((column) => (column.id || get(column, 'accessorKey')) as string)
   )
   const [sorting, setSorting] = useState<SortingState>([])
+  const [grouping, setGrouping] = useState<GroupingState>([])
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
     onColumnOrderChange: setColumnOrder,
+    onGroupingChange: setGrouping,
+    onPaginationChange: () => undefined,
     columnResizeDirection: 'ltr',
     columnResizeMode: 'onChange',
     enableColumnPinning: true,
@@ -83,9 +94,10 @@ export function Table<Data extends object>({
     onSortingChange: setSorting,
     state: {
       sorting,
+      grouping,
       columnOrder,
       columnPinning: {
-        left: ['firstName'],
+        left: ['firstName', 'lastName'],
         right: [],
       },
     },
@@ -108,6 +120,7 @@ export function Table<Data extends object>({
 
   return (
     <DndProvider backend={HTML5Backend}>
+      <TableRowGroups grouping={grouping} onChange={setGrouping} />
       <div
         ref={tableContainerRef}
         className={clsx(
@@ -206,9 +219,41 @@ export function Table<Data extends object>({
                             cell.column.columnDef.meta?.className
                           )}
                         >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
+                          {cell.getIsGrouped() ? (
+                            // If it's a grouped cell, add an expander and row count
+                            <>
+                              <button
+                                {...{
+                                  onClick: row.getToggleExpandedHandler(),
+                                  style: {
+                                    cursor: row.getCanExpand()
+                                      ? 'pointer'
+                                      : 'normal',
+                                  },
+                                }}
+                              >
+                                {row.getIsExpanded() ? '👇' : '👉'}{' '}
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}{' '}
+                                ({row.subRows.length})
+                              </button>
+                            </>
+                          ) : cell.getIsAggregated() ? (
+                            // If the cell is aggregated, use the Aggregated
+                            // renderer for cell
+                            flexRender(
+                              cell.column.columnDef.aggregatedCell ??
+                                cell.column.columnDef.cell,
+                              cell.getContext()
+                            )
+                          ) : cell.getIsPlaceholder() ? null : ( // For cells with repeated values, render null
+                            // Otherwise, just render the regular cell
+                            flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )
                           )}
                         </td>
                       )
