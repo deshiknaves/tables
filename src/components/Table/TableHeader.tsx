@@ -67,6 +67,8 @@ export function TableHeader<Data extends object>({
     type: 'column',
   })
 
+  const hasSubColumns = Boolean(header.subHeaders.length)
+
   return (
     <th
       ref={dropRef}
@@ -76,7 +78,7 @@ export function TableHeader<Data extends object>({
         'border-l-0': index === 0 && isBorderless,
         'border-r-0': index === groupLength - 1 && isBorderless,
         'border-t-0': isBorderless,
-        'border-b-0': isBorderless,
+        'border-b-0': isBorderless && !hasSubColumns,
         'text-center': header.colSpan > 1,
         'text-start': header.colSpan === 1,
         'sticky left-0 z-20': column.getIsPinned(),
@@ -96,39 +98,43 @@ export function TableHeader<Data extends object>({
         )}
         ref={previewRef}
       >
-        <button
-          className={clsx(
-            'w-[16px] h-[24px] flex justify-center align-middle mr-2',
-            {
-              'cursor-grab': !isDragging,
-              'cursor-grabbing': isDragging,
-            }
-          )}
-          ref={dragRef}
-        >
-          =
-        </button>
+        {!hasSubColumns && (
+          <button
+            className={clsx(
+              'w-[16px] h-[24px] flex justify-center align-middle mr-2',
+              {
+                'cursor-grab': !isDragging,
+                'cursor-grabbing': isDragging,
+              }
+            )}
+            ref={dragRef}
+          >
+            =
+          </button>
+        )}
         {header.isPlaceholder
           ? null
           : flexRender(header.column.columnDef.header, header.getContext())}
-        <button
-          type="button"
-          className="ml-auto"
-          onClick={header.column.getToggleSortingHandler()}
-        >
-          {match(header.column.getIsSorted())
-            .with('asc', () => '🔼')
-            .with('desc', () => '🔽')
-            .otherwise(() => (
-              <>‒</>
-            ))}
-        </button>
+        {!hasSubColumns && (
+          <button
+            type="button"
+            className="ml-auto"
+            onClick={header.column.getToggleSortingHandler()}
+          >
+            {match(header.column.getIsSorted())
+              .with('asc', () => '🔼')
+              .with('desc', () => '🔽')
+              .otherwise(() => (
+                <>‒</>
+              ))}
+          </button>
+        )}
         <div
           onDoubleClick={() => header.column.resetSize()}
           onMouseDown={header.getResizeHandler()}
           onTouchStart={header.getResizeHandler()}
           className={clsx(
-            'h-[calc(100%+2px)] w-[4px] bg-indigo-500 absolute -right-1 -top-[1px] z-10 opacity-0 hover:opacity-100 transition-opacity duration-200 cursor-col-resize',
+            'h-[calc(100%+2px)] w-[4px] bg-indigo-500 absolute -right-0 -top-[1px] z-10 opacity-0 hover:opacity-100 transition-opacity duration-200 cursor-col-resize',
             { 'opacity-100': header.column.getIsResizing() }
           )}
         />

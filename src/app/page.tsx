@@ -20,15 +20,21 @@ type Person = {
 const columnHelper = createColumnHelper<Person>()
 
 const columns = [
-  columnHelper.accessor('firstName', {
-    cell: (info) => info.getValue(),
-    header: () => <span>First Name</span>,
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor('lastName', {
-    cell: (info) => <i>{info.getValue()}</i>,
-    header: () => <span>Last Name</span>,
-    footer: (info) => info.column.id,
+  columnHelper.group({
+    id: 'name',
+    header: 'Name',
+    columns: [
+      columnHelper.accessor('firstName', {
+        cell: (info) => info.getValue(),
+        header: () => <span>First Name</span>,
+        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor('lastName', {
+        cell: (info) => <i>{info.getValue()}</i>,
+        header: () => <span>Last Name</span>,
+        footer: (info) => info.column.id,
+      }),
+    ],
   }),
   columnHelper.accessor('age', {
     header: () => 'Age',
