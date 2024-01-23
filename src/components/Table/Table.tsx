@@ -27,6 +27,7 @@ import {
 } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { ChevronDownIcon } from '../icons/ChevronDownIcon'
 import './Table.css'
 import { TableHeader } from './TableHeader'
 import { TableRowGroups } from './TableRowGroups'
@@ -226,16 +227,23 @@ export function Table<Data extends object>({
                             // If it's a grouped cell, add an expander and row count
                             <>
                               <button
-                                {...{
-                                  onClick: row.getToggleExpandedHandler(),
-                                  style: {
-                                    cursor: row.getCanExpand()
-                                      ? 'pointer'
-                                      : 'normal',
-                                  },
+                                type="button"
+                                className="flex items-center gap-1"
+                                onClick={row.getToggleExpandedHandler()}
+                                style={{
+                                  cursor: row.getCanExpand()
+                                    ? 'pointer'
+                                    : 'normal',
                                 }}
                               >
-                                {row.getIsExpanded() ? '👇' : '👉'}{' '}
+                                <ChevronDownIcon
+                                  className={clsx(
+                                    'text-indigo-300 transition-all',
+                                    {
+                                      '-rotate-90': !row.getIsExpanded(),
+                                    }
+                                  )}
+                                />{' '}
                                 {flexRender(
                                   cell.column.columnDef.cell,
                                   cell.getContext()
