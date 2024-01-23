@@ -132,12 +132,12 @@ export function Table<Data extends object>({
         onScroll={onScroll}
       >
         <table
-          className="min-w-full relative table-auto text-secondary-text border-separate border-spacing-0"
+          className="min-w-full relative table-auto text-secondary-text border-collapse"
           style={{
             width: table.getTotalSize(),
           }}
         >
-          <thead className="sticky top-0 border-b border-gray-800 bg-gray-800 z-20">
+          <thead className="sticky top-0 border-b border-gray-800 z-20 bg-black">
             {headerGroups.map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
@@ -157,7 +157,7 @@ export function Table<Data extends object>({
             {summary &&
               table.getHeaderGroups().map((headerGroup, index) =>
                 index === summaryGroupIndex ? (
-                  <tr key={headerGroup.id} className="bg-gray-600">
+                  <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header, index) => (
                       <TableSummary
                         key={`summary-${header.id}`}
@@ -181,6 +181,9 @@ export function Table<Data extends object>({
             )}
             {(virtualRows || rows).map((virtualRow, index) => {
               const row = rows[virtualRow.index ?? index] as Row<Data>
+
+              if (!row) return null
+
               const isSelected = checkSelected ? checkSelected(row) : false
               const cells = row.getVisibleCells()
 

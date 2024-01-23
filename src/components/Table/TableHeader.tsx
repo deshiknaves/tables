@@ -8,6 +8,7 @@ import {
 import { clsx } from 'clsx'
 import { useDrag, useDrop } from 'react-dnd'
 import { match } from 'ts-pattern'
+import { DragHandleIcon } from '../icons/DragHandleIcon'
 
 const reorderColumn = (
   draggedColumnId: string,
@@ -94,22 +95,19 @@ export function TableHeader<Data extends object>({
           {
             'bg-gray-900': isOver,
           },
-          'flex h-full bg-gray-800 px-2 py-1'
+          'flex items-center h-full bg-gray-800 px-2 py-1'
         )}
         ref={previewRef}
       >
         {!hasSubColumns && (
           <button
-            className={clsx(
-              'w-[16px] h-[24px] flex justify-center align-middle mr-2',
-              {
-                'cursor-grab': !isDragging,
-                'cursor-grabbing': isDragging,
-              }
-            )}
+            className={clsx('w-4 h-4 flex justify-center items-center', {
+              'cursor-grab': !isDragging,
+              'cursor-grabbing': isDragging,
+            })}
             ref={dragRef}
           >
-            =
+            <DragHandleIcon className="w-full text-gray-400 relative right-1" />
           </button>
         )}
         {header.isPlaceholder
