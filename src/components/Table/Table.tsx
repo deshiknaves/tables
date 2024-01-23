@@ -27,6 +27,7 @@ import {
 } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { match } from 'ts-pattern'
 import { ChevronDownIcon } from '../icons/ChevronDownIcon'
 import './Table.css'
 import { TableHeader } from './TableHeader'
@@ -223,49 +224,51 @@ export function Table<Data extends object>({
                             cell.column.columnDef.meta?.className
                           )}
                         >
-                          {cell.getIsGrouped() ? (
-                            // If it's a grouped cell, add an expander and row count
-                            <>
-                              <button
-                                type="button"
-                                className="flex items-center gap-1"
-                                onClick={row.getToggleExpandedHandler()}
-                                style={{
-                                  cursor: row.getCanExpand()
-                                    ? 'pointer'
-                                    : 'normal',
-                                }}
-                              >
-                                <ChevronDownIcon
-                                  className={clsx(
-                                    'text-indigo-300 transition-all',
-                                    {
-                                      '-rotate-90': !row.getIsExpanded(),
-                                    }
-                                  )}
-                                />{' '}
-                                {flexRender(
+                          {match({
+                            grouped: cell.getIsGrouped(),
+                            aggregated: cell.getIsAggregated(),
+                          })
+                            .with({ grouped: true }, () => (
+                              <>
+                                <button
+                                  type="button"
+                                  className="flex items-center gap-1"
+                                  onClick={row.getToggleExpandedHandler()}
+                                  style={{
+                                    cursor: row.getCanExpand()
+                                      ? 'pointer'
+                                      : 'normal',
+                                  }}
+                                >
+                                  <ChevronDownIcon
+                                    className={clsx(
+                                      'text-indigo-300 transition-all',
+                                      {
+                                        '-rotate-90': !row.getIsExpanded(),
+                                      }
+                                    )}
+                                  />{' '}
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                  )}{' '}
+                                  ({row.subRows.length})
+                                </button>
+                              </>
+                            ))
+                            .with({ aggregated: true }, () =>
+                              flexRender(
+                                cell.column.columnDef.aggregatedCell ??
                                   cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}{' '}
-                                ({row.subRows.length})
-                              </button>
-                            </>
-                          ) : cell.getIsAggregated() ? (
-                            // If the cell is aggregated, use the Aggregated
-                            // renderer for cell
-                            flexRender(
-                              cell.column.columnDef.aggregatedCell ??
+                                cell.getContext()
+                              )
+                            )
+                            .otherwise(() =>
+                              flexRender(
                                 cell.column.columnDef.cell,
-                              cell.getContext()
-                            )
-                          ) : cell.getIsPlaceholder() ? null : ( // For cells with repeated values, render null
-                            // Otherwise, just render the regular cell
-                            flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )
-                          )}
+                                cell.getContext()
+                              )
+                            )}
                         </td>
                       )
                     })}
