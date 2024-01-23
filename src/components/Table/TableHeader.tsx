@@ -8,6 +8,8 @@ import {
 import { clsx } from 'clsx'
 import { useDrag, useDrop } from 'react-dnd'
 import { match } from 'ts-pattern'
+import { ChevronDownIcon } from '../icons/ChevronDownIcon'
+import { ChevronUpDownIcon } from '../icons/ChevronUpDownIcon'
 import { DragHandleIcon } from '../icons/DragHandleIcon'
 
 const reorderColumn = (
@@ -116,14 +118,14 @@ export function TableHeader<Data extends object>({
         {!hasSubColumns && (
           <button
             type="button"
-            className="ml-auto"
+            className="ml-auto hover:bg-indigo-500 rounded-md w-5 h-5 flex justify-center items-center"
             onClick={header.column.getToggleSortingHandler()}
           >
             {match(header.column.getIsSorted())
-              .with('asc', () => '🔼')
-              .with('desc', () => '🔽')
+              .with('asc', () => <ChevronDownIcon className="rotate-180" />)
+              .with('desc', () => <ChevronDownIcon />)
               .otherwise(() => (
-                <>‒</>
+                <ChevronUpDownIcon />
               ))}
           </button>
         )}
