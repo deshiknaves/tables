@@ -110,7 +110,7 @@ export function TableHeader<Data extends object>({
             })}
             ref={dragRef}
             onClick={(event) => {
-              event.preventDefault()
+              event.stopPropagation()
             }}
           >
             <DragHandleIcon className="w-full text-gray-400 relative right-1" />

@@ -19,7 +19,7 @@ export function TableSummary<Data extends object>({
       key={header.id}
       colSpan={header.colSpan}
       className={clsx(
-        'border relative border-black bg-gray-600 text-sm font-normal',
+        'border relative border-black bg-gray-600 text-xs font-normal',
         {
           'border-l-0': index === 0 && isBorderless,
           'border-r-0': index === groupLength - 1 && isBorderless,

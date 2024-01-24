@@ -49,7 +49,7 @@ export function Table<Data extends object>({
   columns,
   data,
   height,
-  summary,
+  columnSummary,
   isVirtualized = false,
   variant = 'default',
   checkSelected,
@@ -61,7 +61,7 @@ export function Table<Data extends object>({
   columns: ColumnDef<Data, any>[]
   data: Data[]
   height?: number
-  summary?: Partial<Record<keyof Data, string | number | null>>
+  columnSummary?: Partial<Record<keyof Data, string | number | null>>
   isVirtualized?: boolean
   variant?: 'default' | 'borderless'
   checkSelected?: (row: Row<Data>) => boolean
@@ -156,7 +156,7 @@ export function Table<Data extends object>({
                 ))}
               </tr>
             ))}
-            {summary &&
+            {columnSummary &&
               table.getHeaderGroups().map((headerGroup, index) =>
                 index === summaryGroupIndex ? (
                   <tr key={headerGroup.id}>
@@ -168,7 +168,7 @@ export function Table<Data extends object>({
                         groupLength={headerGroup.headers.length}
                         isBorderless={isBorderless}
                       >
-                        {get(summary, header.column.id)}
+                        {get(columnSummary, header.column.id)}
                       </TableSummary>
                     ))}
                   </tr>

@@ -124,13 +124,13 @@ export default function Home() {
             columns={columns}
             data={data}
             isVirtualized
-            summary={{
-              firstName: data.length,
-              lastName: data.length,
-              age: data.length,
-              visits: data.length,
-              status: data.length,
-              progress: data.length,
+            columnSummary={{
+              firstName: `Count: ${data.length}`,
+              lastName: `Count: ${data.length}`,
+              age: `Count: ${data.length}`,
+              visits: `Count: ${data.length}`,
+              status: `Count: ${data.length}`,
+              progress: `Count: ${data.length}`,
             }}
             height={bounds.height}
             variant="borderless"
