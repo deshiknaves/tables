@@ -100,6 +100,7 @@ export function TableHeader<Data extends object>({
           'flex items-center h-full bg-gray-800 px-2 py-1'
         )}
         ref={previewRef}
+        onClick={!hasSubColumns ? column.getToggleSortingHandler() : undefined}
       >
         {!hasSubColumns && (
           <button
@@ -108,6 +109,9 @@ export function TableHeader<Data extends object>({
               'cursor-grabbing': isDragging,
             })}
             ref={dragRef}
+            onClick={(event) => {
+              event.preventDefault()
+            }}
           >
             <DragHandleIcon className="w-full text-gray-400 relative right-1" />
           </button>
