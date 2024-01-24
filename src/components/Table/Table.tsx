@@ -216,7 +216,10 @@ export function Table<Data extends object>({
                               'border-l-0': index === 0 && isBorderless,
                               'border-r-0':
                                 index === cells.length - 1 && isBorderless,
-                              'p-2': !Boolean(
+                              'px-2': !Boolean(
+                                cell.column.columnDef.meta?.flush
+                              ),
+                              'py-1': !Boolean(
                                 cell.column.columnDef.meta?.flush
                               ),
                               'sticky left-0 z-10': cell.column.getIsPinned(),

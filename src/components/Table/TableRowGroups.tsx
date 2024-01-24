@@ -24,9 +24,12 @@ export function TableRowGroups<Data extends object>({
   return (
     <div
       ref={dropRef}
-      className={clsx('w-full p-2 text-xs', {
-        'bg-indigo-500': isOver,
-      })}
+      className={clsx(
+        'w-full p-2 text-xs min-h-9 flex items-center bg-gray-900',
+        {
+          'bg-indigo-500': isOver,
+        }
+      )}
     >
       {grouping.length ? (
         <>
@@ -35,12 +38,12 @@ export function TableRowGroups<Data extends object>({
             {grouping.map((group) => (
               <li
                 key={group}
-                className="border border-indigo-800 px-2 rounded-md bg-indigo-500 inline-flex justify-between align-middle mr-1"
+                className="border border-indigo-800 px-2 rounded-md bg-indigo-400 inline-flex justify-between align-middle mr-1 text-indigo-900 hover:text-indigo-900"
               >
                 {startCase(group)}{' '}
                 <button
                   type="button"
-                  className="w-4 h-4 inline-flex justify-center align-middle"
+                  className="w-4 h-4 inline-flex justify-center align-middle text-indigo-900 hover:text-indigo-900"
                   onClick={() => {
                     onChange(grouping.filter((g) => g !== group))
                   }}
@@ -59,7 +62,13 @@ export function TableRowGroups<Data extends object>({
           </ul>
         </>
       ) : (
-        <>Drag and drop column here to group</>
+        <div
+          className={clsx({
+            'text-gray-400': !isOver,
+          })}
+        >
+          {isOver ? 'Drop to group by' : 'Drag columns here to group'}
+        </div>
       )}
     </div>
   )
