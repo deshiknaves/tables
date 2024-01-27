@@ -7,7 +7,7 @@ import { faker } from '@faker-js/faker'
 import { useWorker } from '@koale/useworker'
 import { createColumnHelper } from '@tanstack/react-table'
 import sample from 'lodash/sample'
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import useMeasure from 'react-use-measure'
 
 type Person = {
@@ -100,6 +100,10 @@ export default function Home() {
   const dataWorkerRef = useRef(dataWorker)
   dataWorkerRef.current = dataWorker
 
+  const rows = useMemo(() => {
+    return Array.from({ length: data.length }).fill(null) as Person[]
+  }, [])
+
   // useEffect(() => {
   //   if (workingRef.current) {
   //     return
@@ -122,8 +126,7 @@ export default function Home() {
         {(bounds) => (
           <Table
             columns={columns}
-            data={data}
-            isVirtualized
+            data={rows}
             columnSummary={{
               firstName: `Count: ${data.length}`,
               lastName: `Count: ${data.length}`,
@@ -132,6 +135,7 @@ export default function Home() {
               status: `Count: ${data.length}`,
               progress: `Count: ${data.length}`,
             }}
+            getRowForIndex={(index) => data[index]}
             height={bounds.height}
             variant="borderless"
           />

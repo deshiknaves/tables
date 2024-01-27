@@ -44,31 +44,37 @@ declare module '@tanstack/react-table' {
   }
 }
 
-export function Table<Data extends object>({
-  className,
-  columns,
-  data,
-  height,
-  columnSummary,
-  isVirtualized = false,
-  variant = 'default',
-  checkSelected,
-  renderRowCells,
-  onScroll,
-  onRowClick,
-}: {
+type TableProps<Data extends object> = {
   className?: string
   columns: ColumnDef<Data, any>[]
-  data: Data[]
-  height?: number
   columnSummary?: Partial<Record<keyof Data, string | number | null>>
+  data: Data[]
+  getRowForIndex: (index: number) => Data | undefined
+  height?: number
+  isLoading?: boolean
   isVirtualized?: boolean
   variant?: 'default' | 'borderless'
   checkSelected?: (row: Row<Data>) => boolean
   renderRowCells?: (row: Row<Data>) => ReactNode | void
   onScroll?: (event: UIEvent<HTMLDivElement>) => void
   onRowClick?: (event: MouseEvent<HTMLTableRowElement>, row: Row<Data>) => void
-}) {
+}
+
+export function Table<Data extends object>({
+  className,
+  columns,
+  columnSummary,
+  data,
+  getRowForIndex,
+  height,
+  isLoading = false,
+  isVirtualized = true,
+  variant = 'default',
+  checkSelected,
+  renderRowCells,
+  onScroll,
+  onRowClick,
+}: TableProps<Data>) {
   const tableContainerRef = useRef<HTMLDivElement>(null)
   const isBorderless = variant === 'borderless'
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
@@ -183,8 +189,11 @@ export function Table<Data extends object>({
             )}
             {(virtualRows || rows).map((virtualRow, index) => {
               const row = rows[virtualRow.index ?? index] as Row<Data>
+              const rowValues = getRowForIndex(virtualRow.index ?? index)
 
-              if (!row) return null
+              if (!row || !rowValues) return null
+
+              row.original = rowValues
 
               const isSelected = checkSelected ? checkSelected(row) : false
               const cells = row.getVisibleCells()

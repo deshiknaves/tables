@@ -138,7 +138,8 @@ export function TableHeader<Data extends object>({
           onMouseDown={header.getResizeHandler()}
           onTouchStart={header.getResizeHandler()}
           className={clsx(
-            'h-[calc(100%+2px)] w-[4px] bg-indigo-500 absolute -right-0 -top-[1px] z-10 opacity-0 hover:opacity-100 transition-opacity duration-200 cursor-col-resize',
+            'h-[calc(100%+2px)] w-[4px] bg-indigo-500 absolute -right-0 -top-[1px] z-10',
+            'opacity-0 hover:opacity-100 transition-opacity duration-200 cursor-col-resize',
             { 'opacity-100': header.column.getIsResizing() }
           )}
         />
