@@ -3,7 +3,6 @@ import { createContext, useContext } from 'react'
 
 type TableContextProps<Data extends object> = {
   rows: Row<Data>[]
-  getRowForIndex: (index: number) => Data | undefined
   headerGroups: HeaderGroup<Data>[]
 }
 

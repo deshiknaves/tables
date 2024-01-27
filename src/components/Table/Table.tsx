@@ -52,7 +52,6 @@ type TableProps<Data extends object> = {
   columns: ColumnDef<Data, any>[]
   columnSummary?: Partial<Record<keyof Data, string | number | null>>
   data: Data[]
-  getRowForIndex: (index: number) => Data | undefined
   height?: number
   isLoading?: boolean
   isVirtualized?: boolean
@@ -69,7 +68,6 @@ export function Table<Data extends object>({
   columns,
   columnSummary,
   data,
-  getRowForIndex,
   height,
   isLoading = false,
   isVirtualized = true,
@@ -207,11 +205,8 @@ export function Table<Data extends object>({
               ) : (
                 (virtualRows || rows).map((virtualRow, index) => {
                   const row = rows[virtualRow.index ?? index] as Row<Data>
-                  const rowValues = getRowForIndex(virtualRow.index ?? index)
 
-                  if (!row || !rowValues) return null
-
-                  row.original = rowValues
+                  if (!row) return null
 
                   const isSelected = checkSelected ? checkSelected(row) : false
                   const cells = row.getVisibleCells()
@@ -321,7 +316,7 @@ export function Table<Data extends object>({
         </div>
       </DndProvider>
       {children && (
-        <TableContext.Provider value={{ rows, getRowForIndex, headerGroups }}>
+        <TableContext.Provider value={{ rows, headerGroups }}>
           {children}
         </TableContext.Provider>
       )}

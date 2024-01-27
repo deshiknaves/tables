@@ -4,16 +4,15 @@ import { DownloadIcon } from '../icons/DownloadIcon'
 import { useTableContext } from './TableContext'
 
 export function TableExportButton<Data extends object>() {
-  const { rows, headerGroups, getRowForIndex } = useTableContext<Data>()
+  const { rows, headerGroups } = useTableContext<Data>()
   function exportData() {
     const headers = last(headerGroups)?.headers ?? []
 
     const data = rows.map((row) => {
-      const rowData = getRowForIndex(row.index)
       return headers.map((header) => {
         const column = header.column
 
-        return get(rowData, column.id) ?? ''
+        return get(row.original, column.id) ?? ''
       })
     })
     const csvContent = `data:text/csv;charset=utf-8,${data
