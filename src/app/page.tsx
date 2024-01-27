@@ -3,6 +3,8 @@
 import { FullContainer } from '@/components/FullContainer'
 import { Layout } from '@/components/Layout'
 import { Table } from '@/components/Table/Table'
+import { TableAccessory } from '@/components/Table/TableAccessory'
+import { TableExportButton } from '@/components/Table/TableExportButton'
 import { faker } from '@faker-js/faker'
 import { useWorker } from '@koale/useworker'
 import { createColumnHelper } from '@tanstack/react-table'
@@ -138,7 +140,11 @@ export default function Home() {
             getRowForIndex={(index) => data[index]}
             height={bounds.height}
             variant="borderless"
-          />
+          >
+            <TableAccessory>
+              <TableExportButton />
+            </TableAccessory>
+          </Table>
         )}
       </FullContainer>
     </Layout>
