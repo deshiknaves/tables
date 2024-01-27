@@ -31,6 +31,7 @@ import { match } from 'ts-pattern'
 import { ChevronDownIcon } from '../icons/ChevronDownIcon'
 import './Table.css'
 import { TableHeader } from './TableHeader'
+import { TableLoadingIndicator } from './TableLoadingIndicator'
 import { TableRowGroups } from './TableRowGroups'
 import { TableSummary } from './TableSummary'
 import { useVirtualizedRows } from './useVritualizedRows'
@@ -142,7 +143,7 @@ export function Table<Data extends object>({
         <table
           className="min-w-full relative table-auto text-secondary-text border-collapse"
           style={{
-            width: table.getTotalSize(),
+            width: isLoading ? 'auto' : table.getTotalSize(),
           }}
         >
           <thead className="sticky top-0 border-b border-gray-800 z-20 bg-black">
@@ -182,133 +183,127 @@ export function Table<Data extends object>({
               )}
           </thead>
           <tbody>
-            {paddingTop > 0 && (
-              <tr>
-                <td style={{ height: `${paddingTop}px` }} />
-              </tr>
-            )}
-            {(virtualRows || rows).map((virtualRow, index) => {
-              const row = rows[virtualRow.index ?? index] as Row<Data>
-              const rowValues = getRowForIndex(virtualRow.index ?? index)
+            {isLoading
+              ? null
+              : paddingTop > 0 && (
+                  <tr>
+                    <td style={{ height: `${paddingTop}px` }} />
+                  </tr>
+                )}
+            {isLoading ? (
+              <TableLoadingIndicator<Data>
+                headerGroups={table.getHeaderGroups()}
+              />
+            ) : (
+              (virtualRows || rows).map((virtualRow, index) => {
+                const row = rows[virtualRow.index ?? index] as Row<Data>
+                const rowValues = getRowForIndex(virtualRow.index ?? index)
 
-              if (!row || !rowValues) return null
+                if (!row || !rowValues) return null
 
-              row.original = rowValues
+                row.original = rowValues
 
-              const isSelected = checkSelected ? checkSelected(row) : false
-              const cells = row.getVisibleCells()
+                const isSelected = checkSelected ? checkSelected(row) : false
+                const cells = row.getVisibleCells()
 
-              return (
-                <tr
-                  key={row.id}
-                  className={clsx({
-                    'bg-primary-500 hover:bg-primary-400 text-primary-text':
-                      isSelected,
-                    'bg-background-contrast hover:bg-background-default':
-                      !isSelected && index % 2 === 0,
-                    'hover:bg-background-default':
-                      !isSelected && index % 2 === 1,
-                    'cursor-pointer': Boolean(onRowClick),
-                  })}
-                  onClick={
-                    onRowClick ? (event) => onRowClick(event, row) : undefined
-                  }
-                >
-                  {(renderRowCells && renderRowCells(row)) ??
-                    cells.map((cell, index) => {
-                      return (
-                        <td
-                          key={cell.id}
-                          className={clsx(
-                            'border border-gray-800 text-sm h-full bg-black',
-                            {
-                              'border-l-0': index === 0 && isBorderless,
-                              'border-r-0':
-                                index === cells.length - 1 && isBorderless,
-                              'px-2': !Boolean(
-                                cell.column.columnDef.meta?.flush
-                              ),
-                              'py-1': !Boolean(
-                                cell.column.columnDef.meta?.flush
-                              ),
-                              'sticky left-0 z-10': cell.column.getIsPinned(),
-                            },
-                            cell.column.columnDef.meta?.className
-                          )}
-                        >
-                          {match({
-                            grouped: cell.getIsGrouped(),
-                            aggregated: cell.getIsAggregated(),
-                          })
-                            .with({ grouped: true }, () => (
-                              <>
-                                <button
-                                  type="button"
-                                  className="flex items-center gap-1"
-                                  onClick={row.getToggleExpandedHandler()}
-                                  style={{
-                                    cursor: row.getCanExpand()
-                                      ? 'pointer'
-                                      : 'normal',
-                                  }}
-                                >
-                                  <ChevronDownIcon
-                                    className={clsx(
-                                      'text-indigo-300 transition-all',
-                                      {
-                                        '-rotate-90': !row.getIsExpanded(),
-                                      }
-                                    )}
-                                  />{' '}
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                  )}{' '}
-                                  ({row.subRows.length})
-                                </button>
-                              </>
-                            ))
-                            .with({ aggregated: true }, () =>
-                              flexRender(
-                                cell.column.columnDef.aggregatedCell ??
-                                  cell.column.columnDef.cell,
-                                cell.getContext()
-                              )
-                            )
-                            .otherwise(() =>
-                              flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )
-                            )}
-                        </td>
-                      )
+                return (
+                  <tr
+                    key={row.id}
+                    className={clsx({
+                      'bg-primary-500 hover:bg-primary-400 text-primary-text':
+                        isSelected,
+                      'bg-background-contrast hover:bg-background-default':
+                        !isSelected && index % 2 === 0,
+                      'hover:bg-background-default':
+                        !isSelected && index % 2 === 1,
+                      'cursor-pointer': Boolean(onRowClick),
                     })}
-                </tr>
-              )
-            })}
-            {paddingBottom > 0 && (
-              <tr>
-                <td style={{ height: `${paddingBottom}px` }} />
-              </tr>
+                    onClick={
+                      onRowClick ? (event) => onRowClick(event, row) : undefined
+                    }
+                  >
+                    {(renderRowCells && renderRowCells(row)) ??
+                      cells.map((cell, index) => {
+                        return (
+                          <td
+                            key={cell.id}
+                            className={clsx(
+                              'border border-gray-800 text-sm h-full bg-black',
+                              {
+                                'border-l-0': index === 0 && isBorderless,
+                                'border-r-0':
+                                  index === cells.length - 1 && isBorderless,
+                                'px-2': !Boolean(
+                                  cell.column.columnDef.meta?.flush
+                                ),
+                                'py-1': !Boolean(
+                                  cell.column.columnDef.meta?.flush
+                                ),
+                                'sticky left-0 z-10': cell.column.getIsPinned(),
+                              },
+                              cell.column.columnDef.meta?.className
+                            )}
+                          >
+                            {match({
+                              grouped: cell.getIsGrouped(),
+                              aggregated: cell.getIsAggregated(),
+                            })
+                              .with({ grouped: true }, () => (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="flex items-center gap-1"
+                                    onClick={row.getToggleExpandedHandler()}
+                                    style={{
+                                      cursor: row.getCanExpand()
+                                        ? 'pointer'
+                                        : 'normal',
+                                    }}
+                                  >
+                                    <ChevronDownIcon
+                                      className={clsx(
+                                        'text-indigo-300 transition-all',
+                                        {
+                                          '-rotate-90': !row.getIsExpanded(),
+                                        }
+                                      )}
+                                    />{' '}
+                                    {flexRender(
+                                      cell.column.columnDef.cell,
+                                      cell.getContext()
+                                    )}{' '}
+                                    ({row.subRows.length})
+                                  </button>
+                                </>
+                              ))
+                              .with({ aggregated: true }, () =>
+                                flexRender(
+                                  cell.column.columnDef.aggregatedCell ??
+                                    cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )
+                              )
+                              .otherwise(() =>
+                                flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )
+                              )}
+                          </td>
+                        )
+                      })}
+                  </tr>
+                )
+              })
             )}
+            {isLoading
+              ? null
+              : paddingBottom > 0 && (
+                  <tr>
+                    <td style={{ height: `${paddingBottom}px` }} />
+                  </tr>
+                )}
           </tbody>
-          <tfoot>
-            {table.getFooterGroups().map((footerGroup) => (
-              <tr key={footerGroup.id}>
-                {footerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.footer,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </tfoot>
         </table>
       </div>
     </DndProvider>
